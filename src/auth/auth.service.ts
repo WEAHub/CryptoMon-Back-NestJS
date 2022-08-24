@@ -26,7 +26,6 @@ export class AuthService {
   }
 
   login(user: any) {
-    console.log(user)
     return {
       username: user.username,
       name: user.name,
