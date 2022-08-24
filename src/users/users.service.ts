@@ -5,23 +5,23 @@ import { User, UserDocument } from './users.model';
 
 @Injectable()
 export class UsersService {
-	constructor(@InjectModel('user') private readonly userModel: Model<UserDocument>) { }
-	async createUser(username: string, password: string, name: string): Promise<User> {
+  constructor(@InjectModel('user') private readonly userModel: Model<UserDocument>) { }
+  async createUser(username: string, password: string, name: string): Promise<User> {
 
-		const userExists = await this.userModel.findOne({ username });
+    const userExists = await this.userModel.findOne({ username });
 
-		if(userExists) {;
-			throw new NotAcceptableException('this user already exists');
-		}
+    if(userExists) {;
+      throw new NotAcceptableException('this user already exists');
+    }
 
-		return this.userModel.create({
-			name,
-			username,
-			password,
-		});
-	}
-	
-	async getUser(query: object ): Promise<User> {
-		return this.userModel.findOne(query);
-	}
+    return this.userModel.create({
+      name,
+      username,
+      password,
+    });
+  }
+  
+  async getUser(query: object ): Promise<User> {
+    return this.userModel.findOne(query);
+  }
 }

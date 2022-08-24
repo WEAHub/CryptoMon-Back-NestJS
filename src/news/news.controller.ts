@@ -4,14 +4,14 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Controller('news')
 export class NewsController {
-	
-	constructor(private newsService: NewsService) {}
-	
-	@UseGuards(AuthGuard('jwt'))
-	@Get('/getNews')
-	async getNews() {
-		return this.newsService.getNews();
-	}
+  
+  constructor(private newsService: NewsService) {}
+  
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/getNews')
+  async getNews() {
+    return this.newsService.getNews();
+  }
 
 }
 
