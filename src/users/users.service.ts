@@ -10,7 +10,7 @@ export class UsersService {
 
     const userExists = await this.userModel.findOne({ username });
 
-    if(userExists) {;
+    if(userExists) {
       throw new NotAcceptableException('this user already exists');
     }
 
