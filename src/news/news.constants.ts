@@ -17,7 +17,7 @@ const rssFeeds = [
 	}
 ]
 
-const tags = {
+const rssTags = {
 	author: 'creator',
 	title: 'title',
 	description: 'contentSnippet',
@@ -28,5 +28,5 @@ const tags = {
 
 export {
 	rssFeeds,
-	tags
+	rssTags
 }

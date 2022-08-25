@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import Parser = require("rss-parser")
 
-import {rssFeeds, tags} from './news.constants';
+import {rssFeeds, rssTags} from './news.constants';
 
 type mediaItem = {
   mediaTag: string,
@@ -35,11 +35,11 @@ export class NewsService {
       const rssParsed = await this.parser.parseString(rssData.data);
       const rssMap = rssParsed.items.map(rss => {
         return {
-          author: rss[tags.author],
-          title: rss[tags.title],
-          description: rss[tags.description],
-          date: rss[tags.date],
-          imageUrl: rss[tags.imageUrl[0]][0].$[tags.imageUrl[1]],
+          author: rss[rssTags.author],
+          title: rss[rssTags.title],
+          description: rss[rssTags.description],
+          date: rss[rssTags.date],
+          imageUrl: rss[rssTags.imageUrl[0]][0].$[rssTags.imageUrl[1]],
           link: rss.link
         }
       })
