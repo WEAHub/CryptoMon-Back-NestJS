@@ -1,8 +1,7 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
-import { UsersService } from './../users/users.service';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { userInfo } from 'os';
+import { compare } from 'bcrypt';
+import { UsersService } from './../users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +10,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private jwtService: JwtService
   ) {}
-
+  
   async validateUser(username: string, password: string): Promise<any> {
 
     const user = await this.usersService.getUser({ username });
@@ -20,19 +19,23 @@ export class AuthService {
       throw new NotAcceptableException('User does not exist');
     }
 
-    const passwordValid = await bcrypt.compare(password, user.password)
+    const passwordValid = await compare(password, user.password)
     return  passwordValid ? user : null;
 
+  }
+
+  generateToken(userData) {
+    return this.jwtService.sign(userData)
   }
 
   login(user: any) {
     return {
       username: user.username,
       name: user.name,
-      token: this.jwtService.sign({
+      token: this.generateToken({
         username: user.username,
         sub: user._id
-      }),
+      })
     };
   }
 
