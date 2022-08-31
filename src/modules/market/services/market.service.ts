@@ -43,7 +43,6 @@ export class MarketService {
 
   async getMarketLatest() {
     // FREE API PLAN
-    return jsonData
 
     const apiRequest = this.requestApi(this.apiEnv.CMC_API_ROUTE_LATEST)
     const apiData = await firstValueFrom(apiRequest)
