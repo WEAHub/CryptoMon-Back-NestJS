@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-class changePasswordDto {
+class modifyUserDto {
 	
 	@IsNotEmpty()
 	@IsString()
@@ -8,25 +8,16 @@ class changePasswordDto {
 	
 	@IsNotEmpty()
 	@IsString()
-	oldPassword: string;
-	
+	name: string;
+
 	@IsNotEmpty()
+	@IsString()
+	currentPassword: string;
+	
 	@IsString()
 	newPassword: string;
 }
 
-class changeNameDto {
-	@IsNotEmpty()
-	@IsString()
-	newName: string;
-
-	@IsNotEmpty()
-	@IsString()
-	password: string;
-}
-
-
 export {
-	changePasswordDto,
-	changeNameDto
+	modifyUserDto,
 }

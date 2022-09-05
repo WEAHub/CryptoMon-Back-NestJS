@@ -26,8 +26,16 @@ export class UsersService {
     return user;
   }
   
-  async getUser(query: object ): Promise<User> {
+  async getUser(query: Object): Promise<User> {
     return this.userModel.findOne(query);
+  }
+
+  async modifyUser(username: string, data: Object) {
+    const update = await this.userModel.updateOne({ username }, data)
+    return {
+      found: update.matchedCount,
+      updated: update.modifiedCount
+    }
   }
 
 }

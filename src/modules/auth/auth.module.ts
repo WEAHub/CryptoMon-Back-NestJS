@@ -14,16 +14,20 @@ import { LocalStrategy } from './strategies/auth.local';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { jwtConstants } from './auth.constants';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     UserModule, 
     PassportModule, 
     MongooseModule.forFeature([{ name: "user", schema: UserSchema }]),
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1d' },
-    })
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+    }), 
   ],
   providers: [AuthService, UsersService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],

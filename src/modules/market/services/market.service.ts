@@ -5,6 +5,8 @@ import { AxiosResponse } from 'axios'
 import { jsonData } from '../mock/getMarketLatest'
 import * as cheerio from 'cheerio';
 import { ConfigService } from '@nestjs/config';
+import { ListingLatest, ListingAsset } from '../models/cmc.models'
+
 
 @Injectable()
 export class MarketService {
@@ -44,15 +46,17 @@ export class MarketService {
   async getMarketLatest() {
     // FREE API PLAN
 
+     return jsonData
+
     const apiRequest = this.requestApi(this.apiEnv.CMC_API_ROUTE_LATEST)
-    const apiData = await firstValueFrom(apiRequest)
-    const retData = apiData.data.map((json) => {
+    const apiData = await firstValueFrom<ListingLatest>(apiRequest)
+    const retData = apiData.data.map((json: ListingAsset) => {
       return {
         id: json.id,
         name: json.name,
         symbol: json.symbol,
-        sparklinesImgUrl: this.sparkLinesUrl.replace('{id}', json.id),
-        assetIconImgUrl: this.assetIconUrl.replace('{id}', json.id),
+        sparklinesImgUrl: this.sparkLinesUrl.replace('{id}', json.id.toString()),
+        assetIconImgUrl: this.assetIconUrl.replace('{id}', json.id.toString()),
         max_supply: json.max_supply,
         total_supply: json.total_supply,
         price: json.quote.USD.price,

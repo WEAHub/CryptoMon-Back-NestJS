@@ -19,7 +19,6 @@ class SignupDto extends LoginDto {
 	name: string;
 }
 
-
 export {
 	LoginDto,
 	SignupDto

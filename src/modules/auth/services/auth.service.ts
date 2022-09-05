@@ -21,12 +21,18 @@ export class AuthService {
     }
 
     const passwordValid = await compare(password, user.password)
-    return  passwordValid ? user : null;
+    return passwordValid ? user : null;
 
   }
 
   generateToken(userData) {
     return this.jwtService.sign(userData)
+  }
+
+  async hashPassword(password) {
+    const saltOrRounds = 10;
+    const hashedPassword = await hash(password, saltOrRounds)
+    return hashedPassword
   }
 
   login(user: any) {
@@ -41,9 +47,8 @@ export class AuthService {
   }
   
   async register(user: SignupDto) {
-    
-    const saltOrRounds = 10;
-    const hashedPassword = await hash(user.password, saltOrRounds);
+  
+    const hashedPassword = await this.hashPassword(user.password)
 
     const newUser = await this.usersService.createUser(
       user.username,
