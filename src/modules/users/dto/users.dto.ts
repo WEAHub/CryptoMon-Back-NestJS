@@ -18,6 +18,19 @@ class modifyUserDto {
 	newPassword: string;
 }
 
+class deleteUser {
+		
+	@IsNotEmpty()
+	@IsString()
+	username: string;
+
+	@IsNotEmpty()
+	@IsString()
+	password: string;
+
+}
+
 export {
 	modifyUserDto,
+	deleteUser
 }

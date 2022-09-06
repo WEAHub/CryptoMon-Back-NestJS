@@ -27,7 +27,7 @@ export class UsersService {
   }
   
   async getUser(query: Object): Promise<User> {
-    return this.userModel.findOne(query);
+    return this.userModel.findOne(query)
   }
 
   async modifyUser(username: string, data: Object) {
@@ -36,6 +36,11 @@ export class UsersService {
       found: update.matchedCount,
       updated: update.modifiedCount
     }
+  }
+
+  async deleteUser(username: string) {
+    const update = await this.userModel.deleteOne({ username })
+    return update.deletedCount
   }
 
 }

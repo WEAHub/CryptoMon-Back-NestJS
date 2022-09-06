@@ -1,10 +1,11 @@
 import { Body, Controller, Post, Get, Param, UseGuards, NotAcceptableException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersService } from '../services/users.service';
-import { modifyUserDto } from '../dto/users.dto';
-import { AuthService } from 'src/modules/auth/services/auth.service';
 import { compare } from 'bcrypt';
-import { QueryWithHelpers } from 'mongoose';
+
+import { UsersService } from '../services/users.service';
+import { AuthService } from 'src/modules/auth/services/auth.service';
+
+import { modifyUserDto, deleteUser } from '../dto/users.dto';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -13,6 +14,31 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
   ) { }
+
+  @Post('/deleteUser')
+  async deleteUser(@Body() user: deleteUser) {
+        
+    const _user = await this.usersService.getUser({ username: user.username })
+    if (!_user) {
+      throw new NotAcceptableException('User does not exist');
+    }
+
+    const passwordValid = await compare(user.password, _user.password)
+    if(!passwordValid) {
+      throw new NotAcceptableException('Current password wrong!');
+    }
+
+    const deletedUser = this.usersService.deleteUser(user.username)
+
+    if(deletedUser) {
+      return {
+        name: user.username,
+        message: `${user.username} deleted succesfully.`
+      }
+    }
+    
+    throw new NotAcceptableException('Problem ocurred trying to delete this user.');
+  }
 
   @Post('/modifyUser')
   async modifyUser(@Body() user: modifyUserDto) {
