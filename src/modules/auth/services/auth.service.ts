@@ -1,4 +1,5 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { UsersService } from './../../../modules/users/services/users.service';
@@ -9,6 +10,7 @@ export class AuthService {
 
   constructor(
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {}
   
@@ -30,8 +32,8 @@ export class AuthService {
   }
 
   async hashPassword(password) {
-    const saltOrRounds = 10;
-    const hashedPassword = await hash(password, saltOrRounds)
+    const rounds = parseInt(this.configService.get('PASSWORD_ROUNDS'));
+    const hashedPassword = await hash(password, rounds)
     return hashedPassword
   }
 
@@ -62,7 +64,7 @@ export class AuthService {
       token: this.generateToken({
         username: newUser.username,
         sub: newUser._id
-       })
+      })
     };
   }
 }

@@ -3,13 +3,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { MarketService } from '../services/market.service';
 
 @Controller('market')
+@UseGuards(AuthGuard('jwt'))
 export class MarketController {
 
 	constructor(
 		private marketService: MarketService
 	) {}
 		
-  @UseGuards(AuthGuard('jwt'))
 
 	@Get('/getMarketLatest')
   async getMarketLatest() {
