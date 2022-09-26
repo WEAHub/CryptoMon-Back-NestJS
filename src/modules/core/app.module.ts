@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './controller/app.controller';
 import { AppService } from './services/app.service';
 
-
-import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { NewsModule } from '../news/news.module';
 import { MarketModule } from '../market/market.module';
+import { TradesModule } from '../trades/trades.module';
 
 @Module({
   imports: [
@@ -27,7 +27,8 @@ import { MarketModule } from '../market/market.module';
     AuthModule,
     UserModule, 
     NewsModule,
-    MarketModule
+    MarketModule,
+    TradesModule
   ],
   controllers: [AppController],
   providers: [AppService],

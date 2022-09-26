@@ -1,12 +1,15 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { firstValueFrom, map, Observable, tap, catchError, of } from 'rxjs';
-import { AxiosResponse } from 'axios'
-import { jsonData } from '../mock/getMarketLatest'
-import * as cheerio from 'cheerio';
 import { ConfigService } from '@nestjs/config';
-import { ListingLatest, ListingAsset } from '../models/cmc.models'
+import { AxiosResponse } from 'axios'
+import { firstValueFrom, map, Observable, tap, catchError, of } from 'rxjs';
+import * as cheerio from 'cheerio';
 
+import { jsonData } from '../mock/getMarketLatest'
+import { marketSentimentJson } from '../mock/getMarketSentimentRequest';
+
+import { ListingLatest, ListingAsset } from '../models/cmc.models'
+import { ITradingViewSentimentRequest } from '../models/tv.models'
 
 @Injectable()
 export class MarketService {
@@ -46,7 +49,7 @@ export class MarketService {
   async getMarketLatest() {
     // FREE API PLAN
 
-     return jsonData
+    return jsonData
 
     const apiRequest = this.requestApi(this.apiEnv.CMC_API_ROUTE_LATEST)
     const apiData = await firstValueFrom<ListingLatest>(apiRequest)
@@ -97,4 +100,26 @@ export class MarketService {
     return newListings
   }
 
+  async getMarketSentiment(asset: string) {
+
+    const postData = Object.assign({}, marketSentimentJson)
+    postData.symbols.tickers.push(`BITSTAMP:${asset.toUpperCase()}`)
+
+    const tvURL = 'https://scanner.tradingview.com/crypto/scan'
+    const tvRequestHeaders = {
+      headers: {
+        'accept-encoding': 'gzip, deflate, br',
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }
+
+    const tvRequest = this.httpService.post(tvURL, postData, tvRequestHeaders)
+    const marketData = await firstValueFrom<ITradingViewSentimentRequest>(tvRequest)
+    const dataObject = marketData.data.data[0].d.reduce(function(r,v,i) {
+      r[postData.columns[i]] = v
+      return r
+    }, {})
+
+    return dataObject
+  }
 }

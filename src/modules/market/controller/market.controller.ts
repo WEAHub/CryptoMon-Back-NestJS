@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MarketService } from '../services/market.service';
 
@@ -20,4 +20,10 @@ export class MarketController {
   async getMarketNew() {
 		return this.marketService.getMarketNewListings();
   }
+
+	@Get('/getMarketSentiment/:asset/') 
+	async getMarketSentiment(@Param('asset') asset) {
+		return this.marketService.getMarketSentiment(asset)
+	}
+	
 }

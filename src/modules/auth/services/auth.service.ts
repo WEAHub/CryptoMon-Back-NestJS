@@ -2,6 +2,7 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
+import { ExtractJwt } from 'passport-jwt';
 import { UsersService } from './../../../modules/users/services/users.service';
 import { SignupDto } from './../dto/auth.dto';
 
@@ -66,5 +67,9 @@ export class AuthService {
         sub: newUser._id
       })
     };
+  }
+
+  async decryptJWT(jwtToken) {
+    return this.jwtService.decode(jwtToken);
   }
 }

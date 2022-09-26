@@ -19,7 +19,18 @@ class SignupDto extends LoginDto {
 	name: string;
 }
 
+class UserDto {
+	@IsNotEmpty()
+	@IsString()
+	username: string;
+
+	@IsNotEmpty()
+	@IsString()
+	sub: string;
+}
+
 export {
 	LoginDto,
-	SignupDto
+	SignupDto,
+	UserDto
 }
