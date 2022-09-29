@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios'
-import { firstValueFrom, map, Observable, tap, catchError, of } from 'rxjs';
+import { firstValueFrom, map, Observable, catchError, of } from 'rxjs';
 import * as cheerio from 'cheerio';
 
 import { jsonData } from '../mock/getMarketLatest'
@@ -18,6 +18,8 @@ export class MarketService {
     CMC_API_URL: 'https://pro-api.coinmarketcap.com',
     CMC_API_KEY: this.configService.get<string>('CMC_API_KEY'),
     CMC_API_ROUTE_LATEST: '/v1/cryptocurrency/listings/latest',
+    CMC_API_MAP: '/v1/cryptocurrency/map',
+    CMC_EXCHANGE_MAP: '/v1/exchange/map',
 
     CMC_SCRAP_URL: 'https://coinmarketcap.com',
     CMC_SCRAP_ROUTE_NEW: '/new'
@@ -121,5 +123,17 @@ export class MarketService {
     }, {})
 
     return dataObject
+  }
+
+  async getIDMap() {
+    const mapRequest = this.requestApi(this.apiEnv.CMC_API_MAP)
+    const mapData = await firstValueFrom(mapRequest)
+    return mapData.data;
+  }
+
+  async getIDExchangeMap() {
+    const mapRequest = this.requestApi(this.apiEnv.CMC_EXCHANGE_MAP)
+    const mapData = await firstValueFrom(mapRequest)
+    return mapData.data;
   }
 }
