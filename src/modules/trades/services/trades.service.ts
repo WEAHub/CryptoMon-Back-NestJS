@@ -1,50 +1,76 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
-import { UserDto } from 'src/modules/auth/dto/auth.dto';
+import { Model } from 'mongoose';
+import { Trade, TradeDocument } from '../models/trades.model';
 import { TradeAddDto, TradeModifyDto } from '../dto/trades.dto';
-import { Trades, TradeDocument } from '../models/trades.model';
+import { IUser } from 'src/modules/auth/models/user.interface';
+import { IResponse, EResponses } from 'src/shared/models/common-responses.interface';
 
 @Injectable()
 export class TradesService {
 
-	constructor(
-    @InjectModel('trades') private readonly tradesModel: Model<TradeDocument>
-	) { }
+  constructor(
+    @InjectModel('trades') private readonly tradesModel: Model<TradeDocument>,
+  ) { }
+  
+  async addTrade(user: IUser, tradeData: TradeAddDto): Promise<IResponse> {
+    const tradesUserExists = await this.tradesModel.findOne(user);
 
-	async addTrade(user: UserDto, tradeData: TradeAddDto) {
+    if(!tradesUserExists) {
+      await this.tradesModel.create({
+        ...user,
+        trades: []
+      })
+    }
 
-		const userData = {
-			username: user.username,
-			userId: user.sub,
-		}
+    const addTrade = await this.tradesModel.findOneAndUpdate(
+      user,
+      { $push: {
+        'trades': {
+          ...tradeData,
+          timeStampAdded: new Date().getTime()
+        }
+      }}
+    );
 
-		const tradesUserExists = await this.tradesModel.findOne(userData);
-
-		if(!tradesUserExists) {
-			await this.tradesModel.create({
-				...userData,
-				trades: []
-			})
-		}
-
-		const addTrade = await this.tradesModel.findOneAndUpdate(
-			userData,
-			{ $push: {
-				'trades': {
-					...tradeData
-				}
-			}}
-		);
-
-		if(!addTrade) {
+    if(!addTrade) {
       throw new NotAcceptableException('Something happened during adding new trade...');
     }
 
-		return addTrade
-	}
+    return {
+      message: EResponses.SUCCESS
+    }
+  }
 
-	async modifyTrade(tradeData: TradeModifyDto) {
-		
-	}
+  async getTrades(user: IUser): Promise<TradeDocument> {
+    return await this.tradesModel.findOne(user);
+  }
+
+  async deleteTrade(user: IUser, tradeId: string) {
+    
+    const tradeExists = await this.tradesModel.findOneAndUpdate({
+      ...user,
+      }, {
+        $pull: {
+          trades: {
+            _id: tradeId
+          }
+        }
+      }
+    )
+
+    if(!tradeExists) {
+      throw new NotAcceptableException('Trade not found...');
+    }
+
+    return {
+      message: EResponses.SUCCESS
+    }
+
+  }
+
+  async modifyTrade(tradeData: TradeModifyDto) {
+    
+  }
+
 }

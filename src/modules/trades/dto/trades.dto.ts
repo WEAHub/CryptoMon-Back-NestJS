@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, isNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 class PairsByExchangeDto {
 	@IsNotEmpty()
@@ -41,6 +41,12 @@ class TradeAddDto extends PriceByExchangeTS {
 	
 }
 
+class TradeDeleteDto extends TradeAddDto {	
+	@IsNotEmpty()
+	@IsString()
+	_id: string;
+}
+
 class TradeModifyDto extends TradeAddDto {
 	@IsNotEmpty()
 	@IsString()
@@ -51,5 +57,6 @@ export {
 	PairsByExchangeDto,
 	PriceByExchangeTS,
 	TradeAddDto,
-	TradeModifyDto
+	TradeDeleteDto,
+	TradeModifyDto,
 }

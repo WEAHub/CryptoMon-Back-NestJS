@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { tradeType } from './trades.interface';
 
 type TradeDocument = Trades & Document;
 
-@Schema({_id: false, versionKey: false})
+@Schema({versionKey: false})
 class Trade {
   
   @Prop({type: String, required: true})
   exchangeName: string;
 
-  @Prop({type: String, required: true})
+  @Prop({type: Number, required: true})
   quantity: number;
 
   @Prop({type: String, required: true})
@@ -18,7 +19,7 @@ class Trade {
   @Prop({type: String, required: true})
   toSymbol: string;
 
-  @Prop({type: String, enum: ['buy', 'sell']})
+  @Prop({type: String, enum: tradeType})
   tradeType: string;
 
   @Prop({type: Number, required: true})
@@ -26,12 +27,15 @@ class Trade {
 
   @Prop({type: Number, required: true})
   timeStamp: number
+
+  @Prop({type: Number, required: true})
+  timeStampAdded: number
 }
 
 const TradeSchema = SchemaFactory.createForClass(Trade);
 
 @Schema()
-export class Trades {
+class Trades {
   @Prop({type: String, required: true})
   username: string;
   
@@ -44,8 +48,11 @@ export class Trades {
 
 const TradesSchema = SchemaFactory.createForClass(Trades);
 
+
 export {
   TradeSchema,
   TradesSchema,
-  TradeDocument
+  TradeDocument,
+  Trades,
+  Trade,
 }

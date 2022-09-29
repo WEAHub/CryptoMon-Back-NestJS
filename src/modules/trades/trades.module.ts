@@ -8,6 +8,7 @@ import { TradesService } from './services/trades.service';
 import { CryptoCompareService } from './services/crypto-compare.service';
 
 import { TradesSchema } from './models/trades.model';
+import { TradeUtilsService } from './utils/func.utils';
 
 
 @Module({
@@ -20,6 +21,7 @@ import { TradesSchema } from './models/trades.model';
   ],
   providers: [
     TradesService, 
+    TradeUtilsService,
     CryptoCompareService
   ]
 })

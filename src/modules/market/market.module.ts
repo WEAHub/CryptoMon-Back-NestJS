@@ -7,6 +7,9 @@ import { MarketService } from './services/market.service';
   imports: [
     HttpModule,
   ],
+  exports: [
+    MarketService,
+  ],
   controllers: [MarketController],
   providers: [MarketService]
 })

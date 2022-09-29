@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Param, Post, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserDto } from 'src/modules/auth/dto/auth.dto';
-import { PairsByExchangeDto, PriceByExchangeTS, TradeAddDto } from '../dto/trades.dto';
+import { CCMapService } from 'src/services/cc-map/cc-map.service';
+import { PairsByExchangeDto, PriceByExchangeTS, TradeAddDto, TradeDeleteDto } from '../dto/trades.dto';
+import { IUserTradesResponse, tradeType, IUserTrades, } from '../models/trades.interface';
+import { Trade, TradeDocument } from '../models/trades.model';
 import { CryptoCompareService } from '../services/crypto-compare.service';
 import { TradesService } from '../services/trades.service';
+import { TradeUtilsService } from '../utils/func.utils';
 
 @Controller('trades')
 @UseGuards(AuthGuard('jwt'))
@@ -11,12 +14,16 @@ export class TradesController {
 
 	constructor(
 		private tradeService: TradesService,
-		private cryptoCompareService: CryptoCompareService
+		private cryptoCompareService: CryptoCompareService,
+		private tradeUtilsService: TradeUtilsService,
+		private ccMapService: CCMapService
 	) { }
 
 	@Get('/getAllExchanges') 
 	async getAllExchanges() {
-		return this.cryptoCompareService.getAllExchanges()
+		return {
+			exchanges: await this.ccMapService.getExchanges()
+		}
 	}
 
 	@Get('/getPairsByExchange/:exchangeName')
@@ -33,6 +40,62 @@ export class TradesController {
 	async addTrade(@Request() req, @Body() tradeData: TradeAddDto) {
 		return this.tradeService.addTrade(req.user, tradeData)
 	}
+
+	@Get('/getTrades')
+	async getTrades(@Request() req): Promise<IUserTradesResponse> {
+
+		const tradesUserExists: TradeDocument = await this.tradeService.getTrades(req.user)
+
+    if(!tradesUserExists) {
+      return {
+        userTrades: []
+      }
+    }
+
+    const tradesUser: IUserTrades[] = await Promise.all(
+      tradesUserExists.toObject().trades.map(
+        async (userTrade: Trade) => {
+
+					const ccMapId = await this.ccMapService.getAssetIDBySymbol(userTrade.fromSymbol)
+					const ccMapExchangeId = await this.ccMapService.getExchangeIDByName(userTrade.exchangeName)
+
+					const actualPrice = (await this.cryptoCompareService.getPriceByExchangeTS({ 
+            ...userTrade,
+            timeStamp: new Date().getTime()
+          })).price;
+
+          const percentChange = this.tradeUtilsService.calcPercentageChange(userTrade, actualPrice)
+          
+					const quantityValue = userTrade.price * userTrade.quantity
+          
+					const quantityActualValue = actualPrice * userTrade.quantity
+          
+					const profitLoss = Math.abs(quantityActualValue - quantityValue)
+
+          return {
+            ...userTrade,
+						ccMapId,
+						ccMapExchangeId,
+            actualPrice,
+            percentChange,
+            quantityValue,
+            quantityActualValue,
+            profitLoss,
+          }  
+        }
+      )
+    )
+
+		return {
+			userTrades: tradesUser
+		}
+	}
+
+	@Post('/deleteTrade')
+	async deleteTrade(@Request() req, @Body() tradeData: TradeDeleteDto) {
+		return this.tradeService.deleteTrade(req.user, tradeData._id)
+	}
+
 }
 
 

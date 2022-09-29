@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom, map } from 'rxjs';
-
 import { CC_API_ROUTES } from '../constants/crypto-compare.routes';
 import { PriceByExchangeTS } from '../dto/trades.dto';
 import { IAllExchanges, IExchange, IPairs, IPrices } from '../models/cc-api.models';
@@ -46,7 +45,7 @@ export class CryptoCompareService {
 	}
 
 	async getPairsByExchange(exchange: string) {
-		const request = this.ccApiGet(CC_API_ROUTES.ALL_PAIRS_BY_EXCHANGE + exchange)
+		const request = this.ccApiGet(CC_API_ROUTES.ALL_PAIRS_BY_EXCHANGE + exchange.toLowerCase())
     const data: IPairs = await firstValueFrom<IPairs>(request)
 		return {
 			pairs : data.Data.current
@@ -54,7 +53,6 @@ export class CryptoCompareService {
 	}
 
 	async getPriceByExchangeTS(pairData: PriceByExchangeTS) {
-
 		const ccTs = (pairData.timeStamp) / 1000
 		const url = `${CC_API_ROUTES.PRICE_BY_EXCHANGE_TS}` +
 			[
@@ -65,7 +63,7 @@ export class CryptoCompareService {
 				'limit=1'
 			].join('&');
 
-		const request = this.ccApiGet(url)
+		const request = this.ccApiGet(url)		
     const data: IPrices = await firstValueFrom<IPrices>(request)
 		return {
 			price: data.Data.Data.at(-1).close,
