@@ -115,7 +115,7 @@ export class CCMapService {
 		return this.ccExchangeMap.map((exchange: IMapExchange) => {
 			return {
 				id: exchange.id,
-				name: exchange.name,				
+				name: exchange.name,
 			}
 		})
 	}
