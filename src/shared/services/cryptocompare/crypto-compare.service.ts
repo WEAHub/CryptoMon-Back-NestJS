@@ -2,9 +2,9 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom, map } from 'rxjs';
-import { CC_API_ROUTES } from '../constants/crypto-compare.routes';
-import { PriceByExchangeTS } from '../dto/trades.dto';
-import { IAllExchanges, IExchange, IPairs, IPrices } from '../models/cc-api.models';
+import { CC_API_ROUTES } from './constants/crypto-compare.routes';
+import { PriceByExchangeTS } from '@modules/trades/dto/trades.dto';
+import { IAllExchanges, IExchange, IPairs, IPrices } from './models/cc-api.models';
 
 @Injectable()
 export class CryptoCompareService {

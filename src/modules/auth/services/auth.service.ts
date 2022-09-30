@@ -2,7 +2,9 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import { ExtractJwt } from 'passport-jwt';
+import { User } from 'src/modules/users/entities/users.model';
+import { IUserSession, IUserToken } from '../models/user.interface';
+
 import { UsersService } from './../../../modules/users/services/users.service';
 import { SignupDto } from './../dto/auth.dto';
 
@@ -15,7 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
   
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<User> {
 
     const user = await this.usersService.getUser({ username });
 
@@ -24,32 +26,33 @@ export class AuthService {
     }
 
     const passwordValid = await compare(password, user.password)
+
     return passwordValid ? user : null;
 
   }
 
-  generateToken(userData) {
+  generateToken(userData: IUserToken): string {
     return this.jwtService.sign(userData)
   }
 
-  async hashPassword(password) {
+  async hashPassword(password: string): Promise<string> {
     const rounds = parseInt(this.configService.get('PASSWORD_ROUNDS'));
     const hashedPassword = await hash(password, rounds)
     return hashedPassword
   }
 
-  login(user: any) {
+  login(user: User): IUserSession {
     return {
       username: user.username,
       name: user.name,
       token: this.generateToken({
         username: user.username,
-        sub: user._id
+        userId: user._id.toString()
       })
     };
   }
   
-  async register(user: SignupDto) {
+  async register(user: SignupDto): Promise<IUserSession> {
   
     const hashedPassword = await this.hashPassword(user.password)
 
@@ -64,12 +67,9 @@ export class AuthService {
       name: newUser.name,
       token: this.generateToken({
         username: newUser.username,
-        sub: newUser._id
+        userId: newUser._id
       })
     };
   }
 
-  async decryptJWT(jwtToken) {
-    return this.jwtService.decode(jwtToken);
-  }
 }

@@ -6,7 +6,7 @@ import { UsersController } from './controller/users.controller';
 
 import { UsersService } from './services/users.service';
 import { AuthService } from '../auth/services/auth.service';
-import { UserSchema } from "./models/users.model"
+import { UserSchema } from "./entities/users.model"
 
 @Module({
   imports: [

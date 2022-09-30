@@ -5,10 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TradesController } from './controller/trades.controller';
 
 import { TradesService } from './services/trades.service';
-import { CryptoCompareService } from './services/crypto-compare.service';
 
 import { TradesSchema } from './models/trades.model';
-import { TradeUtilsService } from './utils/func.utils';
+import { TradeUtilsService } from './services/trade-utils.service';
 
 
 @Module({
@@ -22,7 +21,6 @@ import { TradeUtilsService } from './utils/func.utils';
   providers: [
     TradesService, 
     TradeUtilsService,
-    CryptoCompareService
   ]
 })
 export class TradesModule {}

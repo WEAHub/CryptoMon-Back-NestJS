@@ -1,9 +1,9 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Trade, TradeDocument } from '../models/trades.model';
+import { TradeDocument } from '../models/trades.model';
 import { TradeAddDto, TradeModifyDto } from '../dto/trades.dto';
-import { IUser } from 'src/modules/auth/models/user.interface';
+import { IUserToken } from 'src/modules/auth/models/user.interface';
 import { IResponse, EResponses } from 'src/shared/models/common-responses.interface';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class TradesService {
     @InjectModel('trades') private readonly tradesModel: Model<TradeDocument>,
   ) { }
   
-  async addTrade(user: IUser, tradeData: TradeAddDto): Promise<IResponse> {
+  async addTrade(user: IUserToken, tradeData: TradeAddDto): Promise<IResponse> {
     const tradesUserExists = await this.tradesModel.findOne(user);
 
     if(!tradesUserExists) {
@@ -42,11 +42,11 @@ export class TradesService {
     }
   }
 
-  async getTrades(user: IUser): Promise<TradeDocument> {
+  async getTrades(user: IUserToken): Promise<TradeDocument> {
     return await this.tradesModel.findOne(user);
   }
 
-  async deleteTrade(user: IUser, tradeId: string) {
+  async deleteTrade(user: IUserToken, tradeId: string) {
     
     const tradeExists = await this.tradesModel.findOneAndUpdate({
       ...user,

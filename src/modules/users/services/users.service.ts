@@ -1,7 +1,7 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../models/users.model';
+import { User, UserDocument } from '../entities/users.model';
 
 @Injectable()
 export class UsersService {
@@ -38,7 +38,7 @@ export class UsersService {
     }
   }
 
-  async deleteUser(username: string) {
+  async deleteUser(username: string): Promise<number> {
     const update = await this.userModel.deleteOne({ username })
     return update.deletedCount
   }

@@ -1,29 +1,30 @@
 import { Controller, Get, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { MarketService } from '../services/market.service';
+import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketcap.service';
+
 
 @Controller('market')
 @UseGuards(AuthGuard('jwt'))
 export class MarketController {
 
 	constructor(
-		private marketService: MarketService
+		private cCapService: CoinMarketCapService
 	) {}
 		
 
 	@Get('/getMarketLatest')
   async getMarketLatest() {
-		return this.marketService.getMarketLatest();
+		return this.cCapService.getMarketLatest();
   }
 
 	@Get('/getMarketNew')
   async getMarketNew() {
-		return this.marketService.getMarketNewListings();
+		return this.cCapService.getMarketNewListings();
   }
 
 	@Get('/getMarketSentiment/:asset/') 
 	async getMarketSentiment(@Param('asset') asset) {
-		return this.marketService.getMarketSentiment(asset)
+		return this.cCapService.getMarketSentiment(asset)
 	}
 	
 }

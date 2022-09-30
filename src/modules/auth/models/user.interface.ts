@@ -1,16 +1,15 @@
-interface IUser {
+interface IUserToken {
 	username: string;
 	userId: string;
 }
 
-interface IUserDB {
+interface IUserSession {
   username: string;
-  sub: string;
-  iat: number;
-  exp: number;
+  name: string;
+  token: string;
 }
 
 export {
-	IUser,
-	IUserDB
+	IUserToken,
+  IUserSession,
 }

@@ -17,6 +17,10 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@modules/*": ["./src/modules/*"],
+      "@shared/*":  ["./src/shared/*"]
+    }
   }
 }

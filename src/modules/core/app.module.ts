@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './controller/app.controller';
 import { AppService } from './services/app.service';
 
-import { SharedServicesModule } from 'src/services/services.module';
+import { SharedModule } from 'src/shared/shared.module';
 
 import { UserModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
@@ -13,11 +13,10 @@ import { NewsModule } from '../news/news.module';
 import { MarketModule } from '../market/market.module';
 import { TradesModule } from '../trades/trades.module';
 import { IconModule } from '../icon/icon.module';
-import { join } from 'path';
 
 @Module({
   imports: [
-    SharedServicesModule,
+    SharedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'src/.env/.dev.env',
