@@ -2,10 +2,9 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import { User } from 'src/modules/users/entities/users.model';
-import { IUserSession, IUserToken } from '../models/user.interface';
-
-import { UsersService } from './../../../modules/users/services/users.service';
+import { User } from '@modules/users/entities/users.model';
+import { UsersService } from '@modules/users/services/users.service';
+import { IUserSession, IUserToken } from '../interfaces/user.interface';
 import { SignupDto } from './../dto/auth.dto';
 
 @Injectable()

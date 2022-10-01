@@ -13,7 +13,8 @@ import { UserSchema } from "./entities/users.model"
     MongooseModule.forFeature([{ name: "user", schema: UserSchema }]),
   ],
   providers: [UsersService, AuthService, JwtService],
-  controllers: [UsersController]
+  controllers: [UsersController],
+  exports: [UsersService]
 })
 
 export class UserModule {}

@@ -20,7 +20,7 @@
     "esModuleInterop": true,
     "paths": {
       "@modules/*": ["./src/modules/*"],
-      "@shared/*":  ["./src/shared/*"]
+      "@shared/*":  ["./src/modules/shared/*"]
     }
   }
 }

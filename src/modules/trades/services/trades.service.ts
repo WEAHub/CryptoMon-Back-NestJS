@@ -1,10 +1,10 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TradeDocument } from '../models/trades.model';
+import { TradeDocument } from '../entities/trades.model';
 import { TradeAddDto, TradeModifyDto } from '../dto/trades.dto';
-import { IUserToken } from 'src/modules/auth/models/user.interface';
-import { IResponse, EResponses } from 'src/shared/models/common-responses.interface';
+import { IUserToken } from '@modules/auth/interfaces/user.interface';
+import { IResponse, EResponses } from '@shared/models/common-responses.interface';
 
 @Injectable()
 export class TradesService {

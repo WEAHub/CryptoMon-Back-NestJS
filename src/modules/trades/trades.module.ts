@@ -6,7 +6,7 @@ import { TradesController } from './controller/trades.controller';
 
 import { TradesService } from './services/trades.service';
 
-import { TradesSchema } from './models/trades.model';
+import { TradesSchema } from './entities/trades.model';
 import { TradeUtilsService } from './services/trade-utils.service';
 
 

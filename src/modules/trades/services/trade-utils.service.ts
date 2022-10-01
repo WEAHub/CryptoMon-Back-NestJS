@@ -1,5 +1,5 @@
-import { Trade } from "../models/trades.model";
-import { tradeType } from '../models/trades.interface';
+import { Trade } from "../entities/trades.model";
+import { tradeType } from '../interfaces/trades.interface';
 import { Injectable } from "@nestjs/common";
 
 @Injectable()

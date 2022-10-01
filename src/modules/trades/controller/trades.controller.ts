@@ -1,13 +1,12 @@
 import { Body, Controller, Get, Param, Post, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PairsByExchangeDto, PriceByExchangeTS, TradeAddDto, TradeDeleteDto } from '../dto/trades.dto';
-import { IUserTradesResponse, tradeType, IUserTrades, } from '../models/trades.interface';
-import { Trade, TradeDocument } from '../models/trades.model';
+import { IUserTradesResponse, tradeType, IUserTrades, } from '../interfaces/trades.interface';
+import { Trade, TradeDocument } from '../entities/trades.model';
 import { CryptoCompareService } from '@shared/services/cryptocompare/crypto-compare.service';
-
+import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketcap.service';
 import { TradeUtilsService } from '../services/trade-utils.service';
 import { TradesService } from '../services/trades.service';
-import { CCMapService } from '@shared/services/coinmarketcap-map/cc-map.service';
 
 @Controller('trades')
 @UseGuards(AuthGuard('jwt'))
@@ -17,13 +16,13 @@ export class TradesController {
     private tradeService: TradesService,
     private cryptoCompareService: CryptoCompareService,
     private tradeUtilsService: TradeUtilsService,
-    private ccMapService: CCMapService
+    private coinMarketService: CoinMarketCapService
   ) { }
 
   @Get('/getAllExchanges') 
   async getAllExchanges() {
     return {
-      exchanges: await this.ccMapService.getExchanges()
+      exchanges: await this.coinMarketService.getExchanges()
     }
   }
 
@@ -57,8 +56,8 @@ export class TradesController {
       tradesUserExists.toObject().trades.map(
         async (userTrade: Trade) => {
 
-          const ccMapId = await this.ccMapService.getAssetIDBySymbol(userTrade.fromSymbol)
-          const ccMapExchangeId = await this.ccMapService.getExchangeIDByName(userTrade.exchangeName)
+          const ccMapId = await this.coinMarketService.getAssetIDBySymbol(userTrade.fromSymbol)
+          const ccMapExchangeId = await this.coinMarketService.getExchangeIDByName(userTrade.exchangeName)
 
           const actualPrice = (await this.cryptoCompareService.getPriceByExchangeTS({ 
             ...userTrade,

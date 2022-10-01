@@ -1,4 +1,4 @@
-import { Trade } from "./trades.model"
+import { Trade } from "../entities/trades.model"
 
 enum tradeType {
 	BUY = 'buy',
