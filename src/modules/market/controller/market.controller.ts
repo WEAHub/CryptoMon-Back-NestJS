@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketcap.service';
+import { CoinMarketCapService } from '@modules/services/coinmarketcap/coinmarketcap.service';
 
 
 @Controller('market')
