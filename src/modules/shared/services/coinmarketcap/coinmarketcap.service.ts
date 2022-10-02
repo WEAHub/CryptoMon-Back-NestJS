@@ -8,8 +8,8 @@ import * as cheerio from 'cheerio';
 import { jsonData } from './mock/getMarketLatest'
 import { marketSentimentJson } from './mock/getMarketSentimentRequest';
 
-import { ListingLatest, ListingAsset } from './models/cmc.models'
-import { ITradingViewSentimentRequest } from './models/tv.models'
+import { ListingLatest, ListingAsset } from './models/cmc.interface'
+import { ITradingViewSentimentRequest } from './models/tv.interface'
 import { EMapType, IMapAsset, IMapExchange } from './models/map.interface';
 import { API_ROUTES, sparkLinesUrl } from './constants/coinmarketcap.constants';
 import { createReadStream, createWriteStream, existsSync, mkdirSync } from 'fs';
@@ -40,6 +40,11 @@ export class CoinMarketCapService {
     
 		this.preloadMap()
 	}
+
+  /*
+   * CoinMarketCap Service
+   * JSON MAP DB
+   */
 
 	private async	preloadMap() {
 		this.ccAssetMap = await this.loadMap(this.assetPath, this.assetJsonPath, EMapType.ASSET)
@@ -86,7 +91,6 @@ export class CoinMarketCapService {
 
 	private async buildMap(iconType: EMapType, outPath: string): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-
 			const mapData = iconType == EMapType.ASSET
 			? await this.getIDMap()
 			: await this.getIDExchangeMap()
@@ -106,23 +110,39 @@ export class CoinMarketCapService {
 		})
 	}
 
-	async getAssetIDBySymbol(symbol: string, retrying: boolean = false) {
+	async getAssetIDBySymbol(symbol: string, retrying: boolean = false): Promise<number> {
 		const assetItem = this.ccAssetMap.filter((value: IMapAsset) => value.symbol.toLowerCase() == symbol.toLowerCase())
-		if(!assetItem.length && !retrying) {
-			this.ccAssetMap = await this.buildMap(EMapType.ASSET, this.assetJsonPath)
-			this.getAssetIDBySymbol(symbol, true)
-		}
+
 		return assetItem.length ? assetItem[0].id : -1
 	}
 
-	async getExchangeIDByName(name: string, retrying: boolean = false) {
-		const exchangeItem = this.ccExchangeMap.filter((value: IMapExchange) => value.slug.toLowerCase() == name.toLowerCase())
+	async getExchangeIDByName(name: string, retrying: boolean = false): Promise<number> {
+		const exchangeItem = this.ccExchangeMap.filter((value: IMapExchange) => value.name.toLowerCase() == name.toLowerCase())
+		/*
 		if(!exchangeItem.length && !retrying) {
+      return -1
 			this.ccExchangeMap = await this.buildMap(EMapType.EXCHANGE, this.exchangeJsonPath)
 			this.getExchangeIDByName(name, true)
 		}
+    */
 		return exchangeItem.length ? exchangeItem[0].id : -1
 	}
+
+  /*
+   * CoinMarketCap Service
+   * HTTP Requests
+   */
+  async getIDMap() {
+    const mapRequest = this.requestApi(API_ROUTES.CMC_API_MAP)
+    const mapData = await firstValueFrom(mapRequest)
+    return mapData.data;
+  }
+
+  async getIDExchangeMap() {
+    const mapRequest = this.requestApi(API_ROUTES.CMC_EXCHANGE_MAP)
+    const mapData = await firstValueFrom(mapRequest)
+    return mapData.data;
+  }
 
 	async getExchanges() {
 		return this.ccExchangeMap.map((exchange: IMapExchange) => {
@@ -214,17 +234,5 @@ export class CoinMarketCapService {
     }, {})
 
     return dataObject
-  }
-
-  async getIDMap() {
-    const mapRequest = this.requestApi(API_ROUTES.CMC_API_MAP)
-    const mapData = await firstValueFrom(mapRequest)
-    return mapData.data;
-  }
-
-  async getIDExchangeMap() {
-    const mapRequest = this.requestApi(API_ROUTES.CMC_EXCHANGE_MAP)
-    const mapData = await firstValueFrom(mapRequest)
-    return mapData.data;
   }
 }

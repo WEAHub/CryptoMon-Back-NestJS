@@ -4,7 +4,8 @@ import { createReadStream, existsSync } from 'fs';
 import { getIcoDto } from '../dto/icon.dto';
 import { IconService } from '../services/icon.service';
 import type { Response } from 'express'
-import { EIconType } from '../constants/icon.constants';
+import { EIconType, noImage } from '../constants/icon.constants';
+import { CoinMarketCapService } from '@modules/shared/services/coinmarketcap/coinmarketcap.service';
 
 @Controller('icon')
 export class IconController {
@@ -14,19 +15,30 @@ export class IconController {
 
 	constructor(
 		private configService: ConfigService,
+    private coinMarketService: CoinMarketCapService,
 		private iconService: IconService
 	) {}
 
-	@Get('/getIcon/:iconType/:iconId')
+	@Get('/getIcon/:iconType/:iconName')
   async getIconAsset(@Param() params: getIcoDto, @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
 
-		const localPath = ( params.iconType === EIconType.ASSET 
+    const iconName = params.iconType === EIconType.ASSET 
+    ? params.iconName.replace('DOWN', '').replace('UP', '')
+    : params.iconName;
+
+    const iconId = params.iconType === EIconType.ASSET 
+    ? await this.coinMarketService.getAssetIDBySymbol(iconName)
+    : await this.coinMarketService.getExchangeIDByName(iconName)
+
+		const localPath = iconId === -1
+    ? noImage
+    : (params.iconType === EIconType.ASSET 
 			? this.assetFolder
 			: this.exchangeFolder
-		)	+ `${params.iconId.toString()}.png`
+    )	+ `${iconId}.png`
 
-		if(!existsSync(localPath)) {
-			await	this.iconService.downloadIcon(params.iconType, params.iconId, localPath)
+		if(iconId && !existsSync(localPath)) {
+			await	this.iconService.downloadIcon(params.iconType, iconId, localPath)
 		}
 
 		res.set({

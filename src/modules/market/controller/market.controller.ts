@@ -7,24 +7,24 @@ import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketc
 @UseGuards(AuthGuard('jwt'))
 export class MarketController {
 
-	constructor(
-		private coinMarketService: CoinMarketCapService
-	) {}
-		
+  constructor(
+    private coinMarketService: CoinMarketCapService
+  ) {}
+    
 
-	@Get('/getMarketLatest')
+  @Get('/getMarketLatest')
   async getMarketLatest() {
-		return this.coinMarketService.getMarketLatest();
+    return this.coinMarketService.getMarketLatest();
   }
 
-	@Get('/getMarketNew')
+  @Get('/getMarketNew')
   async getMarketNew() {
-		return this.coinMarketService.getMarketNewListings();
+    return this.coinMarketService.getMarketNewListings();
   }
 
-	@Get('/getMarketSentiment/:asset/') 
-	async getMarketSentiment(@Param('asset') asset) {
-		return this.coinMarketService.getMarketSentiment(asset)
-	}
-	
+  @Get('/getMarketSentiment/:asset/') 
+  async getMarketSentiment(@Param('asset') asset) {
+    return this.coinMarketService.getMarketSentiment(asset)
+  }
+  
 }

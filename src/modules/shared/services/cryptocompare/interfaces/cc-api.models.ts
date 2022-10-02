@@ -75,6 +75,12 @@ interface IExchange {
 	DISPLAYTOTALVOLUME24H: Object
 }
 
+interface IPriceSingle {
+  USD: number;
+  JPY: number;
+  EUR: number;
+}
+
 export {
 	IAllExchanges,
 	IExchange,
@@ -82,4 +88,5 @@ export {
 	IPair,
 	IPrices,
 	IPrice,
+  IPriceSingle
 }

@@ -69,7 +69,35 @@ export class TradesService {
 
   }
 
-  async modifyTrade(tradeData: TradeModifyDto) {
+  async modifyTrade(user: IUserToken, tradeData: TradeModifyDto) {
+     
+    const tradeExists = await this.tradesModel.findOneAndUpdate({
+      ...user,
+      'trades': {
+        '$elemMatch': {
+          '_id': tradeData.id
+        }
+      }
+      }, {
+        $set: {
+          'trades.$[trade]': tradeData
+        }
+      }, {
+        arrayFilters: [
+          {
+            'trade._id': tradeData.id
+          }
+        ]
+      }
+    )
+    
+    if(!tradeExists) {
+      throw new NotAcceptableException('Trade not found...');
+    }
+
+    return {
+      message: EResponses.SUCCESS
+    }
     
   }
 

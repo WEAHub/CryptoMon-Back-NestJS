@@ -50,7 +50,7 @@ class TradeDeleteDto extends TradeAddDto {
 class TradeModifyDto extends TradeAddDto {
 	@IsNotEmpty()
 	@IsString()
-	tradeId: string;
+	id: string;
 }
 
 export {

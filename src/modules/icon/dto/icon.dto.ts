@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { EIconType } from '../constants/icon.constants';
 
 class getIcoDto {
+	@IsString()
 	@IsNotEmpty()
-	iconId: Number;
+	iconName: string;
 
 	@IsString()
 	@IsNotEmpty()

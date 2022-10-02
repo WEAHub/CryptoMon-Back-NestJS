@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import { CC_API_ROUTES } from './constants/crypto-compare.routes';
 import { PriceByExchangeTS } from '@modules/trades/dto/trades.dto';
-import { IAllExchanges, IExchange, IPairs, IPrices } from './models/cc-api.models';
+import { IAllExchanges, IExchange, IPairs, IPrices, IPriceSingle } from './interfaces/cc-api.models';
 
 @Injectable()
 export class CryptoCompareService {
@@ -71,5 +71,12 @@ export class CryptoCompareService {
 		}
 
 	}
+
+  async getPriceBySymbol(symbol: string) {
+    const url = `${CC_API_ROUTES.PRICE_BY_SYMBOL}${symbol}`
+		const request = this.ccApiGet(url)		
+    const data: IPriceSingle = await firstValueFrom<IPriceSingle>(request)
+		return data
+  }
 
 }
