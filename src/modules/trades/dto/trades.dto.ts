@@ -41,10 +41,10 @@ class TradeAddDto extends PriceByExchangeTS {
 	
 }
 
-class TradeDeleteDto extends TradeAddDto {	
+class TradeDeleteDto {	
 	@IsNotEmpty()
 	@IsString()
-	_id: string;
+	tradeId: string;
 }
 
 class TradeModifyDto extends TradeAddDto {
