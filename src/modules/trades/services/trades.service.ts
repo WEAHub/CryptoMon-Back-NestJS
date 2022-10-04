@@ -101,4 +101,13 @@ export class TradesService {
     
   }
 
+  async tradesCount(user: IUserToken): Promise<number>{
+    const tradesUserExists = await this.tradesModel.findOne(user);
+
+    return tradesUserExists
+    ? tradesUserExists.trades.length
+    : 0
+
+  }
+
 }

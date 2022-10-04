@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Param, UseGuards, NotAcceptableException } from '@nestjs/common';
+import { Body, Controller, Post, Get, Request, UseGuards, NotAcceptableException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { compare } from 'bcrypt';
 
@@ -6,6 +6,7 @@ import { UsersService } from '../services/users.service';
 import { AuthService } from 'src/modules/auth/services/auth.service';
 
 import { modifyUserDto, deleteUser } from '../dto/users.dto';
+import { TradesService } from '@modules/trades/services/trades.service';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -13,7 +14,17 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
+    private tradeService: TradesService
   ) { }
+
+  @Get('/stats')
+  async userStats(@Request() req) {
+    const stats = {
+      trades: await this.tradeService.tradesCount(req.user)
+    }
+    console.log(stats)
+    return stats
+  }
 
   @Post('/deleteUser')
   async deleteUser(@Body() user: deleteUser) {

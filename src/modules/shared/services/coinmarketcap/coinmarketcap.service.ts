@@ -38,7 +38,7 @@ export class CoinMarketCapService {
     private readonly configService: ConfigService
   ) {
     
-		this.preloadMap()
+		this.buildDB()
 	}
 
   /*
@@ -46,10 +46,18 @@ export class CoinMarketCapService {
    * JSON MAP DB
    */
 
-	private async	preloadMap() {
-		this.ccAssetMap = await this.loadMap(this.assetPath, this.assetJsonPath, EMapType.ASSET)
-		this.ccExchangeMap = await this.loadMap(this.exchangePath, this.exchangeJsonPath, EMapType.EXCHANGE)
+	private async	buildDB() {
+		await this.buildAssetMap()
+		await this.buildExchangemap()
 	}
+
+  private async buildAssetMap() {
+    this.ccAssetMap = await this.loadMap(this.assetPath, this.assetJsonPath, EMapType.ASSET)
+  }
+
+  private async buildExchangemap() {
+    this.ccExchangeMap = await this.loadMap(this.exchangePath, this.exchangeJsonPath, EMapType.EXCHANGE)
+  }
 
 	private checkFolderStructure(path: string) {
 		if(!existsSync(path)) {
@@ -112,19 +120,21 @@ export class CoinMarketCapService {
 
 	async getAssetIDBySymbol(symbol: string, retrying: boolean = false): Promise<number> {
 		const assetItem = this.ccAssetMap.filter((value: IMapAsset) => value.symbol.toLowerCase() == symbol.toLowerCase())
-
+		if(!assetItem.length && !retrying) {
+      console.log('[CC] Icon ' + symbol + ' Not found, REBUILDING...')
+			this.buildAssetMap()
+			return this.getAssetIDBySymbol(symbol, true)
+		}
 		return assetItem.length ? assetItem[0].id : -1
 	}
 
 	async getExchangeIDByName(name: string, retrying: boolean = false): Promise<number> {
 		const exchangeItem = this.ccExchangeMap.filter((value: IMapExchange) => value.name.toLowerCase() == name.toLowerCase())
-		/*
 		if(!exchangeItem.length && !retrying) {
-      return -1
-			this.ccExchangeMap = await this.buildMap(EMapType.EXCHANGE, this.exchangeJsonPath)
-			this.getExchangeIDByName(name, true)
+      console.log('[CC] Exchange ' + name + ' Not found, REBUILDING...')
+			this.buildExchangemap()
+      return this.getExchangeIDByName(name, true)
 		}
-    */
 		return exchangeItem.length ? exchangeItem[0].id : -1
 	}
 

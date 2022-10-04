@@ -21,6 +21,9 @@ import { TradeUtilsService } from './services/trade-utils.service';
   providers: [
     TradesService, 
     TradeUtilsService,
+  ],
+  exports: [
+    TradesService
   ]
 })
 export class TradesModule {}
