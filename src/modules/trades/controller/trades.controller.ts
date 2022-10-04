@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, UseGuards, Request, Delete, Put, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, Request, Delete, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PairsByExchangeDto, PriceByExchangeTS, TradeAddDto, TradeDeleteDto, TradeModifyDto } from '../dto/trades.dto';
-import { IUserTradesResponse, tradeType, IUserTrades, } from '../interfaces/trades.interface';
+import { IUserTradesResponse, IUserTrades, } from '../interfaces/trades.interface';
 import { Trade, TradeDocument } from '../entities/trades.model';
 import { CryptoCompareService } from '@shared/services/cryptocompare/crypto-compare.service';
 import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketcap.service';
@@ -66,9 +66,6 @@ export class TradesController {
       tradesUserExists.toObject().trades.map(
         async (userTrade: Trade) => {
 
-          // const ccMapId = await this.coinMarketService.getAssetIDBySymbol(userTrade.fromSymbol)
-          // const ccMapExchangeId = await this.coinMarketService.getExchangeIDByName(userTrade.exchangeName)
-
           const actualPrice = (await this.cryptoCompareService.getPriceByExchangeTS({ 
             ...userTrade,
             timeStamp: new Date().getTime()
@@ -86,8 +83,6 @@ export class TradesController {
 
           return {
             ...userTrade,
-           //  ccMapId,
-           //  ccMapExchangeId,
             actualPrice,
             percentChange,
             quantityValue,
