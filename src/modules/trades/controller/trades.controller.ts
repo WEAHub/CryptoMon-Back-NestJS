@@ -5,7 +5,6 @@ import { IUserTradesResponse, IUserTrades, } from '../interfaces/trades.interfac
 import { Trade, TradeDocument } from '../entities/trades.model';
 import { CryptoCompareService } from '@shared/services/cryptocompare/crypto-compare.service';
 import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketcap.service';
-import { TradeUtilsService } from '../services/trade-utils.service';
 import { TradesService } from '../services/trades.service';
 
 @Controller('trades')
@@ -15,7 +14,6 @@ export class TradesController {
   constructor(
     private tradeService: TradesService,
     private cryptoCompareService: CryptoCompareService,
-    private tradeUtilsService: TradeUtilsService,
     private coinMarketService: CoinMarketCapService
   ) { }
 
@@ -67,27 +65,15 @@ export class TradesController {
         async (userTrade: Trade) => {
 
           const actualPrice = (await this.cryptoCompareService.getPriceByExchangeTS({ 
-            ...userTrade,
-            timeStamp: new Date().getTime()
+            ...userTrade, 
+            timeStamp: new Date().getTime() 
           })).price;
 
           const symbolPrice = await this.cryptoCompareService.getPriceBySymbol(userTrade.fromSymbol)
 
-          const percentChange = this.tradeUtilsService.calcPercentageChange(userTrade, actualPrice)
-          
-          const quantityValue = userTrade.price * userTrade.quantity
-          
-          const quantityActualValue = actualPrice * userTrade.quantity
-          
-          const profitLoss = Math.abs(quantityActualValue - quantityValue)
-
           return {
             ...userTrade,
             actualPrice,
-            percentChange,
-            quantityValue,
-            quantityActualValue,
-            profitLoss,
             symbolPrice
           }  
         }

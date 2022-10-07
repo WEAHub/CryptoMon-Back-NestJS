@@ -1,8 +1,9 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { MarketService } from '@modules/market/services/market.service';
 import { CoinMarketCapService } from './coinmarketcap/coinmarketcap.service';
+import { CoinTickerService } from './cointicker/cointicker.service';
 import { CryptoCompareService } from './cryptocompare/crypto-compare.service';
+import { TVTicker } from './tv-ticker/tv-ticker.service';
 
 
 @Module({
@@ -11,11 +12,15 @@ import { CryptoCompareService } from './cryptocompare/crypto-compare.service';
 	],
   providers: [
 		CryptoCompareService,
-		CoinMarketCapService
+		CoinMarketCapService,
+    CoinTickerService,
+    TVTicker,
   ],
 	exports: [
 		CryptoCompareService,
-		CoinMarketCapService
+		CoinMarketCapService,
+    CoinTickerService,
+    TVTicker,
 	]
 })
 

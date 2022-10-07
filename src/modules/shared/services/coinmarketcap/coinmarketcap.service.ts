@@ -8,9 +8,9 @@ import * as cheerio from 'cheerio';
 import { jsonData } from './mock/getMarketLatest'
 import { marketSentimentJson } from './mock/getMarketSentimentRequest';
 
-import { ListingLatest, ListingAsset } from './models/cmc.interface'
-import { ITradingViewSentimentRequest } from './models/tv.interface'
-import { EMapType, IMapAsset, IMapExchange } from './models/map.interface';
+import { ListingLatest, ListingAsset } from './interfaces/cmc.interface'
+import { ITradingViewSentimentRequest } from './interfaces/tv.interface'
+import { EMapType, IMapAsset, IMapExchange } from './interfaces/map.interface';
 import { API_ROUTES, sparkLinesUrl } from './constants/coinmarketcap.constants';
 import { createReadStream, createWriteStream, existsSync, mkdirSync } from 'fs';
 import { finished } from 'stream';
@@ -33,6 +33,9 @@ export class CoinMarketCapService {
     }
   }
 
+  lastAssetBuild!: Date
+  lastExchangeBuild!: Date;
+
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService
@@ -51,11 +54,21 @@ export class CoinMarketCapService {
 		await this.buildExchangemap()
 	}
 
+  checkDates(buildDate: Date): boolean {
+    return buildDate === undefined 
+    ? false 
+    : buildDate.getDate() === new Date().getDate()
+  }
+
   private async buildAssetMap() {
+    if(this.checkDates(this.lastAssetBuild)) return
+    this.lastAssetBuild = new Date()
     this.ccAssetMap = await this.loadMap(this.assetPath, this.assetJsonPath, EMapType.ASSET)
   }
 
   private async buildExchangemap() {
+    if(this.checkDates(this.lastExchangeBuild)) return
+    this.lastExchangeBuild = new Date()
     this.ccExchangeMap = await this.loadMap(this.exchangePath, this.exchangeJsonPath, EMapType.EXCHANGE)
   }
 

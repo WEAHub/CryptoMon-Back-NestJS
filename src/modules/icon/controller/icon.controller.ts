@@ -1,11 +1,13 @@
 import { Controller, Get, Header, Param, Res, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream, existsSync } from 'fs';
-import { getIcoDto } from '../dto/icon.dto';
-import { IconService } from '../services/icon.service';
 import type { Response } from 'express'
+
 import { EIconType, noImage } from '../constants/icon.constants';
+import { getIcoDto } from '../dto/icon.dto';
+
 import { CoinMarketCapService } from '@modules/shared/services/coinmarketcap/coinmarketcap.service';
+import { IconService } from '../services/icon.service';
 
 @Controller('icon')
 export class IconController {

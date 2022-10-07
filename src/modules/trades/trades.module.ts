@@ -7,7 +7,7 @@ import { TradesController } from './controller/trades.controller';
 import { TradesService } from './services/trades.service';
 
 import { TradesSchema } from './entities/trades.model';
-import { TradeUtilsService } from './services/trade-utils.service';
+import { TradeGateway } from './gateway/trades.gateway';
 
 
 @Module({
@@ -19,8 +19,8 @@ import { TradeUtilsService } from './services/trade-utils.service';
     TradesController
   ],
   providers: [
-    TradesService, 
-    TradeUtilsService,
+    TradesService,
+    TradeGateway
   ],
   exports: [
     TradesService

@@ -22,7 +22,6 @@ export class UsersController {
     const stats = {
       trades: await this.tradeService.tradesCount(req.user)
     }
-    console.log(stats)
     return stats
   }
 
