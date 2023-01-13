@@ -7,7 +7,6 @@ import { MarketModule } from './market/market.module';
 import { TradesModule } from './trades/trades.module';
 import { IconModule } from './icon/icon.module';
 import { SharedModule } from './shared/shared.module';
-import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { AlertsModule } from './alerts/alerts.module';
     MarketModule,
     TradesModule,
     IconModule,
-    AlertsModule,
   ]
 })
 

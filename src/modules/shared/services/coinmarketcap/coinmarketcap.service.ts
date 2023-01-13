@@ -142,7 +142,7 @@ export class CoinMarketCapService {
 	}
 
 	async getExchangeIDByName(name: string, retrying: boolean = false): Promise<number> {
-		const exchangeItem = this.ccExchangeMap.filter((value: IMapExchange) => value.name.toLowerCase() == name.toLowerCase())
+		const exchangeItem = this.ccExchangeMap.filter((value: IMapExchange) => value.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]))
 		if(!exchangeItem.length && !retrying) {
       console.log('[CC] Exchange ' + name + ' Not found, REBUILDING...')
 			this.buildExchangemap()
@@ -170,7 +170,6 @@ export class CoinMarketCapService {
 	async getExchanges() {
 		return this.ccExchangeMap.map((exchange: IMapExchange) => {
 			return {
-				id: exchange.id,
 				name: exchange.name,
 			}
 		})

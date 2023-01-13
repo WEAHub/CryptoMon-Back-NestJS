@@ -34,11 +34,11 @@ export class CryptoCompareService {
 		const request = this.ccApiGet(CC_API_ROUTES.ALL_EXCHANGES)
     const data: IAllExchanges = await firstValueFrom<IAllExchanges>(request)
 		return {
-			exchanges : Object.values(data.Data).map((exchange: IExchange) => {
+			exchanges : Object.values(data.Data)
+      .sort((a: IExchange, b: IExchange) => Number(a.SortOrder) - Number(b.SortOrder))
+      .map((exchange: IExchange) => {
 				return {
-					id: exchange.Id,
-					name: exchange.Name,
-					logo: `https://cryptocompare.com${exchange.LogoUrl}`				
+					name: exchange.Name,			
 				}
 			})
 		}

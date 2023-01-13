@@ -25,7 +25,6 @@ export class AuthService {
     }
 
     const passwordValid = await compare(password, user.password)
-
     return passwordValid ? user : null;
 
   }

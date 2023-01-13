@@ -1,11 +1,16 @@
-import { Body, Controller, Get, Param, Post, UseGuards, Request, Delete, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, Request, Delete, Patch, Put } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+
 import { PairsByExchangeDto, PriceByExchangeTS, TradeAddDto, TradeDeleteDto, TradeModifyDto } from '../dto/trades.dto';
+import { AddAlertDTO, FinishAlertDTO } from '../dto/alerts.dto';
+
 import { IUserTradesResponse, IUserTrades, } from '../interfaces/trades.interface';
-import { Trade, TradeDocument } from '../entities/trades.model';
+import { Trade, TradeDocument, Trades } from '../entities/trades.model';
 import { CryptoCompareService } from '@shared/services/cryptocompare/crypto-compare.service';
 import { CoinMarketCapService } from '@shared/services/coinmarketcap/coinmarketcap.service';
 import { TradesService } from '../services/trades.service';
+
+import { alertList } from '../constants/alerts.constants';
 
 @Controller('trades')
 @UseGuards(AuthGuard('jwt'))
@@ -19,7 +24,13 @@ export class TradesController {
 
   @Post('/addTrade')
   async addTrade(@Request() req, @Body() tradeData: TradeAddDto) {
-    return this.tradeService.addTrade(req.user, tradeData)
+
+    const pricesOnAdd = await this.cryptoCompareService.getPriceBySymbol(tradeData.fromSymbol)
+    const trade = {
+      ...tradeData,
+      pricesOnAdd
+    }
+    return this.tradeService.addTrade(req.user, trade)
   }
 
   @Delete('/deleteTrade/:tradeId')
@@ -34,9 +45,7 @@ export class TradesController {
 
   @Get('/getAllExchanges') 
   async getAllExchanges() {
-    return {
-      exchanges: await this.coinMarketService.getExchanges()
-    }
+    return await this.cryptoCompareService.getAllExchanges()
   }
 
   @Get('/getPairsByExchange/:exchangeName')
@@ -52,37 +61,63 @@ export class TradesController {
   @Get('/getTrades')
   async getTrades(@Request() req): Promise<IUserTradesResponse> {
 
-    const tradesUserExists: TradeDocument = await this.tradeService.getTrades(req.user)
+    const tradesUserExists = await this.tradeService.getTrades(req.user)
 
     if(!tradesUserExists) {
       return {
-        userTrades: []
+        userTrades: [],
       }
     }
 
-    const tradesUser: IUserTrades[] = await Promise.all(
-      tradesUserExists.toObject().trades.map(
-        async (userTrade: Trade) => {
+    const tradesObj: Trades = tradesUserExists.toObject();
 
-          const actualPrice = (await this.cryptoCompareService.getPriceByExchangeTS({ 
+    const tradesUser: IUserTrades[] = await Promise.all(
+
+      tradesObj.trades.map(async (userTrade: Trade) => {
+
+        const actualPrice = (
+          await this.cryptoCompareService.getPriceByExchangeTS({ 
             ...userTrade, 
             timeStamp: new Date().getTime() 
-          })).price;
+          })
+        ).price;
 
-          const symbolPrice = await this.cryptoCompareService.getPriceBySymbol(userTrade.fromSymbol)
+        const symbolPrice = await this.cryptoCompareService.getPriceBySymbol(userTrade.fromSymbol)
 
-          return {
-            ...userTrade,
-            actualPrice,
-            symbolPrice
-          }  
-        }
-      )
+        return {
+          ...userTrade,
+          actualPrice,
+          symbolPrice
+        }  
+      })
+
     )
 
     return {
       userTrades: tradesUser,
     }
+  }
+
+  @Get('/getAlertsList')
+  async getAlertsList() {
+    return {
+      alertList
+    }
+  }
+
+  
+  @Put('/addAlert')
+  async addAlerts(@Request() req, @Body() alert: AddAlertDTO) {
+    const message = await this.tradeService.addAlert(req.user, alert)
+    return message
+  }
+
+  @Patch('/finishAlert')
+  async finishAlert(@Request() req, @Body() trade: FinishAlertDTO) {
+    console.log('Finished alert', trade);
+    
+    const message = await this.tradeService.deleteAlert(req.user, trade.tradeId, trade.alertId)
+    return message
   }
 
 }

@@ -1,9 +1,9 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CoinMarketCapService } from './coinmarketcap/coinmarketcap.service';
-import { CoinTickerService } from './cointicker/cointicker.service';
+import { CoinTickerService } from './cryptocompare-ticker/cryptocompare-ticker.service';
 import { CryptoCompareService } from './cryptocompare/crypto-compare.service';
-import { TVTicker } from './tv-ticker/tv-ticker.service';
+import { TradingViewTicker } from './tradingview-ticker/tv-ticker.service';
 
 
 @Module({
@@ -14,13 +14,13 @@ import { TVTicker } from './tv-ticker/tv-ticker.service';
 		CryptoCompareService,
 		CoinMarketCapService,
     CoinTickerService,
-    TVTicker,
+    TradingViewTicker,
   ],
 	exports: [
 		CryptoCompareService,
 		CoinMarketCapService,
     CoinTickerService,
-    TVTicker,
+    TradingViewTicker,
 	]
 })
 

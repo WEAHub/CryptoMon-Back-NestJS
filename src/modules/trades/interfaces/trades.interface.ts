@@ -1,4 +1,5 @@
 import { Trade } from "../entities/trades.model"
+import { ITradeAlert } from "./alerts.interface";
 
 enum tradeType {
 	BUY = 'buy',
@@ -6,17 +7,27 @@ enum tradeType {
 }
 
 interface IUserTrades extends Trade {
-	percentChange: string;
-	actualPrice: number;
-	logoUrl: string;
+  actualPrice: number;
+  symbolPrice: {};
 }
 
 interface IUserTradesResponse {
 	userTrades: IUserTrades[];
 }
 
+interface IAsset {
+  exchange: string;
+  fromSymbol: string;
+  toSymbol: string;  
+  id?: string;
+  price?: number;
+  alert?: ITradeAlert;
+  user?: {};
+}
+
 export {
 	tradeType,
 	IUserTrades,
+  IAsset,
 	IUserTradesResponse
 }

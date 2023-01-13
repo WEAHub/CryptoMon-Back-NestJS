@@ -60,8 +60,12 @@ enum EMessageTypes {
   UNAUTHORIZED = 401,
   SUBMESSAGE = 2,
   ERROR = 500,
+  MAXSOCKETS = 429
 }
   
+interface ICallback {
+  ();
+}
 
 export {
   ICommonStructure,
@@ -69,5 +73,6 @@ export {
   ISubComplete,
   ISubMessage,
   IMessageError,
-  EMessageTypes
+  EMessageTypes,
+  ICallback
 }

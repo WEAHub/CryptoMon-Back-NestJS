@@ -8,6 +8,8 @@ import { TradesService } from './services/trades.service';
 
 import { TradesSchema } from './entities/trades.model';
 import { TradeGateway } from './gateway/trades.gateway';
+import { AlertsService } from './services/alerts/alerts.service';
+import { AlertListener } from './listeners/alerts.listener';
 
 
 @Module({
@@ -20,7 +22,9 @@ import { TradeGateway } from './gateway/trades.gateway';
   ],
   providers: [
     TradesService,
-    TradeGateway
+    AlertsService,
+    TradeGateway,
+    AlertListener
   ],
   exports: [
     TradesService
